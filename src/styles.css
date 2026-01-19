@@ -1,0 +1,44 @@
+/**
+ * Ripliel Styles
+ * Designed by Matthew Fala
+ */
+
+/* Serif font override when enabled */
+.ripliel-serif {
+  font-family: Georgia, 'Times New Roman', Times, serif !important;
+}
+
+.ripliel-serif p,
+.ripliel-serif article,
+.ripliel-serif main,
+.ripliel-serif .content,
+.ripliel-serif .post,
+.ripliel-serif .entry-content {
+  font-family: Georgia, 'Times New Roman', Times, serif !important;
+}
+
+/* Anchor container */
+#ripliel-anchor-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  overflow: visible;
+}
+
+/* Individual anchor styling */
+.ripliel-anchor {
+  position: absolute;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Ensure anchors don't interfere with text selection */
+.ripliel-anchor svg {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}

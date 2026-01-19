@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ripliel Settings</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Ripliel</h1>
+      <p class="tagline">Reading Line Anchors</p>
+    </header>
+
+    <main>
+      <div class="setting">
+        <label class="toggle">
+          <input type="checkbox" id="enabled" checked>
+          <span class="slider"></span>
+          <span class="label">Enable Anchors</span>
+        </label>
+      </div>
+
+      <div class="setting">
+        <label for="sentenceInterval">Anchor Frequency</label>
+        <p class="description">Place anchors every X sentences</p>
+        <div class="input-group">
+          <input type="number" id="sentenceInterval" min="1" max="20" value="3">
+          <span class="unit">sentences</span>
+        </div>
+      </div>
+
+      <div class="setting">
+        <label class="toggle">
+          <input type="checkbox" id="useSerifFont" checked>
+          <span class="slider"></span>
+          <span class="label">Use Serif Font</span>
+        </label>
+        <p class="description">Changes text to a serif font for easier reading</p>
+      </div>
+    </main>
+
+    <footer>
+      <p class="credits">Designed by Matthew Fala</p>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

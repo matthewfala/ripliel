@@ -1,0 +1,27 @@
+{
+  "name": "ripliel",
+  "version": "1.0.1",
+  "description": "Browser extension that helps readers track lines with visual anchors - Designed by Matthew Fala",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "generate-icons": "node scripts/generate-icons.js",
+    "lint": "eslint src/ popup/ tests/",
+    "build:chrome": "mkdir -p dist/chrome && cp -r manifest.json src popup icons dist/chrome/",
+    "build:firefox": "mkdir -p dist/firefox && cp -r manifest.json src popup icons dist/firefox/"
+  },
+  "keywords": [
+    "browser-extension",
+    "reading",
+    "accessibility",
+    "firefox",
+    "chrome"
+  ],
+  "author": "Matthew Fala <matthewfala@gmail.com>",
+  "license": "All Rights Reserved",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  }
+}
