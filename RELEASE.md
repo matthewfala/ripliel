@@ -95,7 +95,7 @@ unzip -l dist/ripliel.zip
       "id": "ripliel@matthewfala.com",
       "strict_min_version": "109.0",
       "data_collection_permissions": {
-        "required": false
+        "required": ["none"]
       }
     }
   }
@@ -122,7 +122,7 @@ Ensure `manifest.json` includes:
 "browser_specific_settings": {
   "gecko": {
     "data_collection_permissions": {
-      "required": false
+      "required": ["none"]
     }
   }
 }
