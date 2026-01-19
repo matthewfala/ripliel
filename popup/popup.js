@@ -9,18 +9,28 @@
   const DEFAULT_CONFIG = {
     enabled: true,
     sentenceInterval: 3,
-    useSerifFont: true
+    useSerifFont: true,
+    serifFont: 'petit-medieval'
   };
 
   // Get storage API (works for both Chrome and Firefox)
   function getStorageAPI() {
-    if (typeof chrome !== 'undefined' && chrome.storage) {
-      return chrome.storage;
-    }
     if (typeof browser !== 'undefined' && browser.storage) {
       return browser.storage;
     }
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      return chrome.storage;
+    }
     return null;
+  }
+
+  // Update font section visibility
+  function updateFontSectionVisibility() {
+    const useSerifFont = document.getElementById('useSerifFont').checked;
+    const fontSection = document.getElementById('fontSelectionSection');
+    if (fontSection) {
+      fontSection.classList.toggle('hidden', !useSerifFont);
+    }
   }
 
   // Load settings from storage
@@ -32,11 +42,31 @@
       return;
     }
 
-    storage.sync.get(DEFAULT_CONFIG, (config) => {
-      document.getElementById('enabled').checked = config.enabled;
-      document.getElementById('sentenceInterval').value = config.sentenceInterval;
-      document.getElementById('useSerifFont').checked = config.useSerifFont;
-    });
+    const result = storage.sync.get(DEFAULT_CONFIG);
+
+    if (result && typeof result.then === 'function') {
+      // Promise-based (Firefox)
+      result.then((config) => {
+        applyConfigToUI(config);
+      }).catch((err) => {
+        console.warn('Error loading settings:', err);
+        applyConfigToUI(DEFAULT_CONFIG);
+      });
+    } else {
+      // Callback-based (Chrome)
+      storage.sync.get(DEFAULT_CONFIG, (config) => {
+        applyConfigToUI(config);
+      });
+    }
+  }
+
+  // Apply config values to UI elements
+  function applyConfigToUI(config) {
+    document.getElementById('enabled').checked = config.enabled;
+    document.getElementById('sentenceInterval').value = config.sentenceInterval;
+    document.getElementById('useSerifFont').checked = config.useSerifFont;
+    document.getElementById('serifFont').value = config.serifFont || 'petit-medieval';
+    updateFontSectionVisibility();
   }
 
   // Save settings to storage
@@ -51,7 +81,8 @@
     const config = {
       enabled: document.getElementById('enabled').checked,
       sentenceInterval: parseInt(document.getElementById('sentenceInterval').value, 10) || 3,
-      useSerifFont: document.getElementById('useSerifFont').checked
+      useSerifFont: document.getElementById('useSerifFont').checked,
+      serifFont: document.getElementById('serifFont').value
     };
 
     // Validate sentenceInterval
@@ -59,6 +90,7 @@
     if (config.sentenceInterval > 20) config.sentenceInterval = 20;
 
     storage.sync.set(config);
+    updateFontSectionVisibility();
   }
 
   // Initialize popup
@@ -70,6 +102,7 @@
     document.getElementById('sentenceInterval').addEventListener('change', saveSettings);
     document.getElementById('sentenceInterval').addEventListener('input', saveSettings);
     document.getElementById('useSerifFont').addEventListener('change', saveSettings);
+    document.getElementById('serifFont').addEventListener('change', saveSettings);
   }
 
   // Start when DOM is ready

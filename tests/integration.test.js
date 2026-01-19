@@ -130,6 +130,15 @@ describe('Popup HTML structure', () => {
     expect(popupContent).toContain('id="useSerifFont"');
   });
 
+  test('has font selection dropdown', () => {
+    expect(popupContent).toContain('id="serifFont"');
+    expect(popupContent).toContain('petit-medieval');
+  });
+
+  test('does not use X in UI text', () => {
+    expect(popupContent).not.toContain('every X sentences');
+  });
+
   test('credits Matthew Fala', () => {
     expect(popupContent).toContain('Matthew Fala');
   });

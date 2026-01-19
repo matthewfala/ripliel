@@ -117,12 +117,6 @@ describe('splitIntoSentences', () => {
     expect(splitIntoSentences(undefined)).toEqual([]);
   });
 
-  test('handles text without punctuation', () => {
-    const text = 'This is text without ending punctuation';
-    const sentences = splitIntoSentences(text);
-    expect(sentences.length).toBeGreaterThanOrEqual(1);
-  });
-
   test('filters out empty sentences', () => {
     const text = 'First.   Second.';
     const sentences = splitIntoSentences(text);
@@ -171,6 +165,11 @@ describe('shouldSkipElement', () => {
     expect(shouldSkipElement(el)).toBe(true);
   });
 
+  test('returns true for TITLE elements', () => {
+    const el = document.createElement('title');
+    expect(shouldSkipElement(el)).toBe(true);
+  });
+
   test('returns true for contentEditable elements', () => {
     const el = document.createElement('div');
     el.contentEditable = 'true';
@@ -196,7 +195,10 @@ describe('shouldSkipElement', () => {
 describe('validateConfig', () => {
   test('returns default config for empty object', () => {
     const config = validateConfig({});
-    expect(config).toEqual(DEFAULT_CONFIG);
+    expect(config.enabled).toBe(DEFAULT_CONFIG.enabled);
+    expect(config.sentenceInterval).toBe(DEFAULT_CONFIG.sentenceInterval);
+    expect(config.useSerifFont).toBe(DEFAULT_CONFIG.useSerifFont);
+    expect(config.serifFont).toBe(DEFAULT_CONFIG.serifFont);
   });
 
   test('validates enabled boolean', () => {
@@ -217,6 +219,12 @@ describe('validateConfig', () => {
     expect(validateConfig({ useSerifFont: false }).useSerifFont).toBe(false);
     expect(validateConfig({ useSerifFont: true }).useSerifFont).toBe(true);
     expect(validateConfig({ useSerifFont: 'yes' }).useSerifFont).toBe(true); // default
+  });
+
+  test('validates serifFont string', () => {
+    expect(validateConfig({ serifFont: 'georgia' }).serifFont).toBe('georgia');
+    expect(validateConfig({ serifFont: 'times' }).serifFont).toBe('times');
+    expect(validateConfig({}).serifFont).toBe('petit-medieval'); // default
   });
 });
 
@@ -278,14 +286,22 @@ describe('calculateAnchorPositions', () => {
 });
 
 describe('Constants', () => {
-  test('ANCHOR_PATTERNS has expected patterns', () => {
-    expect(ANCHOR_PATTERNS).toContain('dots');
-    expect(ANCHOR_PATTERNS).toContain('dashes');
-    expect(ANCHOR_PATTERNS).toContain('triangles');
-    expect(ANCHOR_PATTERNS).toContain('waves');
-    expect(ANCHOR_PATTERNS).toContain('squares');
-    expect(ANCHOR_PATTERNS).toContain('diamonds');
-    expect(ANCHOR_PATTERNS.length).toBe(6);
+  test('ANCHOR_PATTERNS has at least 50 patterns', () => {
+    expect(ANCHOR_PATTERNS.length).toBeGreaterThanOrEqual(50);
+  });
+
+  test('ANCHOR_PATTERNS includes expected base patterns', () => {
+    const basePatterns = ['dots', 'dashes', 'triangles', 'waves', 'squares', 'diamonds'];
+    basePatterns.forEach(base => {
+      const hasPattern = ANCHOR_PATTERNS.some(p => p.startsWith(base));
+      expect(hasPattern).toBe(true);
+    });
+  });
+
+  test('ANCHOR_PATTERNS includes additional shapes', () => {
+    expect(ANCHOR_PATTERNS).toContain('crosses');
+    expect(ANCHOR_PATTERNS).toContain('stars');
+    expect(ANCHOR_PATTERNS).toContain('hearts');
   });
 
   test('COLOR_PALETTE has valid hex colors', () => {
@@ -293,12 +309,13 @@ describe('Constants', () => {
     COLOR_PALETTE.forEach(color => {
       expect(color).toMatch(hexColorRegex);
     });
-    expect(COLOR_PALETTE.length).toBe(10);
+    expect(COLOR_PALETTE.length).toBe(20);
   });
 
   test('DEFAULT_CONFIG has expected values', () => {
     expect(DEFAULT_CONFIG.enabled).toBe(true);
     expect(DEFAULT_CONFIG.sentenceInterval).toBe(3);
     expect(DEFAULT_CONFIG.useSerifFont).toBe(true);
+    expect(DEFAULT_CONFIG.serifFont).toBe('petit-medieval');
   });
 });

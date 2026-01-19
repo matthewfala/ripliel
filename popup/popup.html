@@ -24,8 +24,9 @@
 
       <div class="setting">
         <label for="sentenceInterval">Anchor Frequency</label>
-        <p class="description">Place anchors every X sentences</p>
+        <p class="description">How often to place anchors (number of sentences between each anchor)</p>
         <div class="input-group">
+          <span class="prefix">Every</span>
           <input type="number" id="sentenceInterval" min="1" max="20" value="3">
           <span class="unit">sentences</span>
         </div>
@@ -38,6 +39,20 @@
           <span class="label">Use Serif Font</span>
         </label>
         <p class="description">Changes text to a serif font for easier reading</p>
+      </div>
+
+      <div class="setting" id="fontSelectionSection">
+        <label for="serifFont">Font Selection</label>
+        <p class="description">Choose your preferred reading font</p>
+        <select id="serifFont">
+          <option value="petit-medieval">Petit Medieval Clarendon 1159 (Default)</option>
+          <option value="georgia">Georgia</option>
+          <option value="times">Times New Roman</option>
+          <option value="palatino">Palatino</option>
+          <option value="garamond">Garamond</option>
+          <option value="baskerville">Baskerville</option>
+        </select>
+        <p class="description note">If the selected font is unavailable, Georgia will be used as fallback</p>
       </div>
     </main>
 

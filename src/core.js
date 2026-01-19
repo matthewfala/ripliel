@@ -5,35 +5,50 @@
  * Contains core logic for anchor generation that can be tested independently.
  */
 
-// Anchor pattern types
+// 50+ Anchor pattern types
 const ANCHOR_PATTERNS = [
-  'dots',
-  'dashes',
-  'triangles',
-  'waves',
-  'squares',
-  'diamonds'
+  // Dots variations
+  'dots-small', 'dots-medium', 'dots-large', 'dots-hollow', 'dots-alternating',
+  'dots-gradient', 'dots-spaced', 'dots-dense', 'dots-double', 'dots-triple',
+  // Dashes variations
+  'dashes-short', 'dashes-medium', 'dashes-long', 'dashes-thick', 'dashes-thin',
+  'dashes-double', 'dashes-dotted', 'dashes-spaced', 'dashes-dense', 'dashes-tapered',
+  // Triangles variations
+  'triangles-up', 'triangles-down', 'triangles-alternating', 'triangles-small',
+  'triangles-large', 'triangles-hollow', 'triangles-filled', 'triangles-arrows',
+  // Waves variations
+  'waves-gentle', 'waves-steep', 'waves-double', 'waves-zigzag', 'waves-sine',
+  // Squares variations
+  'squares-small', 'squares-medium', 'squares-large', 'squares-hollow',
+  'squares-rotated', 'squares-alternating', 'squares-checkered',
+  // Diamonds variations
+  'diamonds-small', 'diamonds-medium', 'diamonds-large', 'diamonds-hollow',
+  'diamonds-stretched', 'diamonds-alternating',
+  // Other shapes
+  'crosses', 'plus-signs', 'stars', 'hearts', 'chevrons-right', 'chevrons-left',
+  'brackets', 'slashes', 'backslashes', 'pipes', 'tildes', 'carets'
 ];
 
-// Color palette - visible colors that work well as underlines
+// Expanded color palette - 20 visible colors
 const COLOR_PALETTE = [
-  '#e74c3c', // red
-  '#3498db', // blue
-  '#2ecc71', // green
-  '#9b59b6', // purple
-  '#f39c12', // orange
-  '#1abc9c', // teal
-  '#e91e63', // pink
-  '#00bcd4', // cyan
-  '#ff5722', // deep orange
-  '#607d8b'  // blue grey
+  '#e74c3c', '#c0392b', // reds
+  '#3498db', '#2980b9', // blues
+  '#2ecc71', '#27ae60', // greens
+  '#9b59b6', '#8e44ad', // purples
+  '#f39c12', '#e67e22', // oranges
+  '#1abc9c', '#16a085', // teals
+  '#e91e63', '#c2185b', // pinks
+  '#00bcd4', '#0097a7', // cyans
+  '#ff5722', '#d84315', // deep oranges
+  '#607d8b', '#455a64'  // blue greys
 ];
 
 // Configuration defaults
 const DEFAULT_CONFIG = {
   enabled: true,
   sentenceInterval: 3,
-  useSerifFont: true
+  useSerifFont: true,
+  serifFont: 'petit-medieval'
 };
 
 /**
@@ -76,7 +91,7 @@ function getAnchorStyle(content) {
 function splitIntoSentences(text) {
   if (!text || typeof text !== 'string') return [];
   // Match sentences ending with . ! or ? followed by space or end of string
-  const sentences = text.match(/[^.!?]*[.!?]+[\s]*/g) || [text];
+  const sentences = text.match(/[^.!?]*[.!?]+[\s]*/g) || [];
   return sentences.filter(s => s.trim().length > 0);
 }
 
@@ -88,7 +103,7 @@ function splitIntoSentences(text) {
 function shouldSkipElement(element) {
   if (!element || !element.tagName) return true;
 
-  const skipTags = ['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA', 'INPUT', 'CODE', 'PRE', 'SVG'];
+  const skipTags = ['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA', 'INPUT', 'CODE', 'PRE', 'SVG', 'TITLE'];
   if (skipTags.includes(element.tagName)) return true;
 
   if (element.isContentEditable === true || element.contentEditable === 'true') return true;
@@ -114,6 +129,10 @@ function validateConfig(config) {
 
   if (typeof config.useSerifFont === 'boolean') {
     validated.useSerifFont = config.useSerifFont;
+  }
+
+  if (typeof config.serifFont === 'string') {
+    validated.serifFont = config.serifFont;
   }
 
   return validated;
