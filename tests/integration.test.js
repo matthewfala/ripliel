@@ -86,6 +86,7 @@ describe('File structure', () => {
     expect(fs.existsSync(path.join(popupPath, 'popup.html'))).toBe(true);
     expect(fs.existsSync(path.join(popupPath, 'popup.css'))).toBe(true);
     expect(fs.existsSync(path.join(popupPath, 'popup.js'))).toBe(true);
+    expect(fs.existsSync(path.join(popupPath, 'info.html'))).toBe(true);
   });
 
   test('icon files exist', () => {
@@ -133,6 +134,16 @@ describe('Popup HTML structure', () => {
   test('has font selection dropdown', () => {
     expect(popupContent).toContain('id="serifFont"');
     expect(popupContent).toContain('Libre Clarendon');
+  });
+
+  test('has fallback font dropdown', () => {
+    expect(popupContent).toContain('id="fallbackFont"');
+    expect(popupContent).toContain('Fallback Font');
+  });
+
+  test('has link to info page', () => {
+    expect(popupContent).toContain('info.html');
+    expect(popupContent).toContain('About Ripliel');
   });
 
   test('does not use X in UI text', () => {

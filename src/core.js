@@ -46,9 +46,10 @@ const COLOR_PALETTE = [
 // Configuration defaults
 const DEFAULT_CONFIG = {
   enabled: true,
-  sentenceInterval: 3,
+  sentenceInterval: 2,
   useSerifFont: true,
-  serifFont: 'petit-medieval'
+  serifFont: 'petit-medieval',
+  fallbackFont: 'georgia'
 };
 
 /**
@@ -133,6 +134,10 @@ function validateConfig(config) {
 
   if (typeof config.serifFont === 'string') {
     validated.serifFont = config.serifFont;
+  }
+
+  if (typeof config.fallbackFont === 'string') {
+    validated.fallbackFont = config.fallbackFont;
   }
 
   return validated;

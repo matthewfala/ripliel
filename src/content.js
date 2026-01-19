@@ -11,9 +11,10 @@
   // Configuration defaults
   const DEFAULT_CONFIG = {
     enabled: true,
-    sentenceInterval: 3,
+    sentenceInterval: 2,
     useSerifFont: true,
-    serifFont: 'petit-medieval' // 'petit-medieval', 'georgia', 'times', 'palatino', etc.
+    serifFont: 'petit-medieval', // 'petit-medieval', 'georgia', 'times', 'palatino', etc.
+    fallbackFont: 'georgia' // 'georgia', 'times', 'palatino', 'garamond'
   };
 
   // 50+ Anchor pattern types - combinations of shapes, sizes, and variations
@@ -695,46 +696,97 @@
   }
 
   /**
-   * Process a paragraph and add anchors based on visual lines and sentence count
+   * Process a paragraph and add anchors based on visual lines and sentence count.
+   * IMPORTANT: Anchor style is determined by SENTENCE CONTENT (hash), not visual line text.
+   * This ensures anchors remain consistent when page is resized, as the sentence
+   * that triggers an anchor doesn't change - only which visual line it appears on.
    */
-  function processParagraph(paragraph) {
-    if (processedParagraphs.has(paragraph)) return;
+  function processParagraph(paragraph, isFirstParagraph = false, globalSentenceOffset = 0) {
+    if (processedParagraphs.has(paragraph)) return { sentenceCount: 0 };
 
     // Skip certain elements
     const skipTags = ['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA', 'INPUT', 'CODE', 'PRE', 'SVG', 'TITLE'];
-    if (skipTags.includes(paragraph.tagName)) return;
-    if (paragraph.isContentEditable) return;
-    if (paragraph.closest('title')) return;
+    if (skipTags.includes(paragraph.tagName)) return { sentenceCount: 0 };
+    if (paragraph.isContentEditable) return { sentenceCount: 0 };
+    if (paragraph.closest('title')) return { sentenceCount: 0 };
 
     const text = paragraph.textContent.trim();
-    if (text.length < 20) return;
+    if (text.length < 20) return { sentenceCount: 0 };
 
     processedParagraphs.add(paragraph);
 
-    // Get visual lines
-    const lines = getVisualLines(paragraph);
-    if (lines.length === 0) return;
+    // Get ALL sentences from the paragraph (this is stable content, not affected by resize)
+    const allSentences = splitIntoSentences(text);
+    if (allSentences.length === 0) return { sentenceCount: 0 };
 
-    // Track cumulative sentence count across lines
-    let cumulativeSentences = 0;
+    // Determine which sentences should trigger anchors
+    // The anchor style comes from the SENTENCE content, not the visual line
+    const anchoredSentenceIndices = new Set();
+
+    // Always anchor the first sentence (which appears on the first line) if this is first paragraph
+    if (isFirstParagraph && allSentences.length > 0) {
+      anchoredSentenceIndices.add(0);
+    }
+
+    // Find sentences at intervals
+    for (let i = 0; i < allSentences.length; i++) {
+      const globalIndex = globalSentenceOffset + i + 1; // 1-indexed for interval calculation
+      if (globalIndex % config.sentenceInterval === 0) {
+        anchoredSentenceIndices.add(i);
+      }
+    }
+
+    if (anchoredSentenceIndices.size === 0) {
+      return { sentenceCount: allSentences.length };
+    }
+
+    // Get visual lines for positioning
+    const lines = getVisualLines(paragraph);
+    if (lines.length === 0) return { sentenceCount: allSentences.length };
+
+    // Map sentences to visual lines
+    // Build a mapping of which sentence each character belongs to
+    let runningText = '';
+    const charToSentence = [];
+    for (let sentenceIdx = 0; sentenceIdx < allSentences.length; sentenceIdx++) {
+      const sentence = allSentences[sentenceIdx];
+      for (let i = 0; i < sentence.length; i++) {
+        charToSentence.push(sentenceIdx);
+      }
+      runningText += sentence;
+    }
+
+    // For each visual line, determine which sentence it primarily contains
+    // and whether that sentence should be anchored
+    const processedLines = new Set();
 
     for (const line of lines) {
-      if (!line.text || line.width < 50) continue; // Skip very short lines
+      if (!line.text || line.width < 50) continue;
 
-      const lineSentences = countSentences(line.text);
-      const previousCount = cumulativeSentences;
-      cumulativeSentences += lineSentences;
+      // Find the sentence that this line's text mostly belongs to
+      // We use the start of the line text to determine which sentence
+      const lineStartInParagraph = text.indexOf(line.text.substring(0, Math.min(20, line.text.length)));
 
-      // Check if this line crosses a sentence interval threshold
-      // A line should be anchored if the cumulative count crosses an interval boundary
-      const intervalsBeforeLine = Math.floor(previousCount / config.sentenceInterval);
-      const intervalsAfterLine = Math.floor(cumulativeSentences / config.sentenceInterval);
+      if (lineStartInParagraph === -1) continue;
 
-      if (intervalsAfterLine > intervalsBeforeLine ||
-          (lineSentences > 0 && cumulativeSentences >= config.sentenceInterval && cumulativeSentences % config.sentenceInterval === 0)) {
+      // Find which sentence this position belongs to
+      let charPos = 0;
+      let sentenceIdx = 0;
+      for (let i = 0; i < allSentences.length; i++) {
+        charPos += allSentences[i].length;
+        if (lineStartInParagraph < charPos) {
+          sentenceIdx = i;
+          break;
+        }
+      }
 
-        // This line should have anchors - use SAME style for all 3 anchors
-        const style = getAnchorStyle(line.text);
+      // Check if this sentence should be anchored and we haven't anchored this line yet
+      if (anchoredSentenceIndices.has(sentenceIdx) && !processedLines.has(sentenceIdx)) {
+        processedLines.add(sentenceIdx);
+
+        // Use the SENTENCE content for the hash - this is stable across resizes!
+        const sentenceContent = allSentences[sentenceIdx].trim();
+        const style = getAnchorStyle(sentenceContent);
         const anchorWidth = Math.min(line.width * 0.12, 50);
 
         // Calculate visual start, middle, end positions
@@ -743,7 +795,7 @@
         const endLeft = line.right - anchorWidth;
         const anchorTop = line.bottom + 1;
 
-        // Create three anchors with the SAME style
+        // Create three anchors with the SAME style (based on sentence content)
         const startAnchor = createAnchor(startLeft, anchorTop, anchorWidth, style);
         const middleAnchor = createAnchor(middleLeft, anchorTop, anchorWidth, style);
         const endAnchor = createAnchor(endLeft, anchorTop, anchorWidth, style);
@@ -760,6 +812,8 @@
         });
       }
     }
+
+    return { sentenceCount: allSentences.length };
   }
 
   /**
@@ -781,29 +835,46 @@
     const style = document.createElement('style');
     style.id = 'ripliel-font-style';
 
+    // Build fallback chain based on config
+    let fallbackChain;
+    switch (config.fallbackFont) {
+      case 'times':
+        fallbackChain = '"Times New Roman", Times, Georgia, serif';
+        break;
+      case 'palatino':
+        fallbackChain = '"Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif';
+        break;
+      case 'garamond':
+        fallbackChain = 'Garamond, "EB Garamond", Georgia, serif';
+        break;
+      case 'georgia':
+      default:
+        fallbackChain = 'Georgia, "Times New Roman", Times, serif';
+    }
+
     let fontFamily;
     switch (config.serifFont) {
       case 'petit-medieval':
-        // Libre Clarendon (embedded, OFL licensed) with fallback
-        fontFamily = '"Libre Clarendon", Georgia, "Times New Roman", Times, serif';
+        // Libre Clarendon (embedded, OFL licensed) with configurable fallback
+        fontFamily = `"Libre Clarendon", ${fallbackChain}`;
         break;
       case 'georgia':
-        fontFamily = 'Georgia, "Times New Roman", Times, serif';
+        fontFamily = `Georgia, "Times New Roman", Times, serif`;
         break;
       case 'times':
-        fontFamily = '"Times New Roman", Times, Georgia, serif';
+        fontFamily = `"Times New Roman", Times, Georgia, serif`;
         break;
       case 'palatino':
-        fontFamily = '"Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif';
+        fontFamily = `"Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif`;
         break;
       case 'garamond':
-        fontFamily = 'Garamond, "EB Garamond", Georgia, serif';
+        fontFamily = `Garamond, "EB Garamond", Georgia, serif`;
         break;
       case 'baskerville':
-        fontFamily = 'Baskerville, "Libre Baskerville", Georgia, serif';
+        fontFamily = `Baskerville, "Libre Baskerville", Georgia, serif`;
         break;
       default:
-        fontFamily = '"Libre Clarendon", Georgia, "Times New Roman", Times, serif';
+        fontFamily = `"Libre Clarendon", ${fallbackChain}`;
     }
 
     style.textContent = `
@@ -871,17 +942,25 @@
       });
     }
 
-    // Process asynchronously
+    // Process asynchronously with global sentence tracking
     const elementArray = Array.from(elements);
     console.log('[Ripliel] Found', elementArray.length, 'paragraphs to process');
 
     let index = 0;
+    let globalSentenceCount = 0;
+    let isFirstParagraphProcessed = false;
+
     function processNext() {
       const batchSize = 3;
       const end = Math.min(index + batchSize, elementArray.length);
 
       for (; index < end; index++) {
-        processParagraph(elementArray[index]);
+        const isFirstParagraph = !isFirstParagraphProcessed;
+        const result = processParagraph(elementArray[index], isFirstParagraph, globalSentenceCount);
+        if (result.sentenceCount > 0) {
+          isFirstParagraphProcessed = true;
+          globalSentenceCount += result.sentenceCount;
+        }
       }
 
       if (index < elementArray.length) {

@@ -8,9 +8,10 @@
 
   const DEFAULT_CONFIG = {
     enabled: true,
-    sentenceInterval: 3,
+    sentenceInterval: 2,
     useSerifFont: true,
-    serifFont: 'petit-medieval'
+    serifFont: 'petit-medieval',
+    fallbackFont: 'georgia'
   };
 
   // Get storage API (works for both Chrome and Firefox)
@@ -28,8 +29,12 @@
   function updateFontSectionVisibility() {
     const useSerifFont = document.getElementById('useSerifFont').checked;
     const fontSection = document.getElementById('fontSelectionSection');
+    const fallbackSection = document.getElementById('fallbackFontSection');
     if (fontSection) {
       fontSection.classList.toggle('hidden', !useSerifFont);
+    }
+    if (fallbackSection) {
+      fallbackSection.classList.toggle('hidden', !useSerifFont);
     }
   }
 
@@ -66,6 +71,7 @@
     document.getElementById('sentenceInterval').value = config.sentenceInterval;
     document.getElementById('useSerifFont').checked = config.useSerifFont;
     document.getElementById('serifFont').value = config.serifFont || 'petit-medieval';
+    document.getElementById('fallbackFont').value = config.fallbackFont || 'georgia';
     updateFontSectionVisibility();
   }
 
@@ -80,9 +86,10 @@
 
     const config = {
       enabled: document.getElementById('enabled').checked,
-      sentenceInterval: parseInt(document.getElementById('sentenceInterval').value, 10) || 3,
+      sentenceInterval: parseInt(document.getElementById('sentenceInterval').value, 10) || 2,
       useSerifFont: document.getElementById('useSerifFont').checked,
-      serifFont: document.getElementById('serifFont').value
+      serifFont: document.getElementById('serifFont').value,
+      fallbackFont: document.getElementById('fallbackFont').value
     };
 
     // Validate sentenceInterval
@@ -103,6 +110,7 @@
     document.getElementById('sentenceInterval').addEventListener('input', saveSettings);
     document.getElementById('useSerifFont').addEventListener('change', saveSettings);
     document.getElementById('serifFont').addEventListener('change', saveSettings);
+    document.getElementById('fallbackFont').addEventListener('change', saveSettings);
   }
 
   // Start when DOM is ready

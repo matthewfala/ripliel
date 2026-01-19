@@ -314,8 +314,9 @@ describe('Constants', () => {
 
   test('DEFAULT_CONFIG has expected values', () => {
     expect(DEFAULT_CONFIG.enabled).toBe(true);
-    expect(DEFAULT_CONFIG.sentenceInterval).toBe(3);
+    expect(DEFAULT_CONFIG.sentenceInterval).toBe(2);
     expect(DEFAULT_CONFIG.useSerifFont).toBe(true);
     expect(DEFAULT_CONFIG.serifFont).toBe('petit-medieval');
+    expect(DEFAULT_CONFIG.fallbackFont).toBe('georgia');
   });
 });
