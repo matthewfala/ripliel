@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Ripliel",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Helps readers track lines with visual anchors - Designed by Matthew Fala",
   "permissions": ["storage"],
   "host_permissions": ["<all_urls>"],
@@ -27,7 +27,7 @@
     }
   ],
   "background": {
-    "service_worker": "src/background.js"
+    "scripts": ["src/background.js"]
   },
   "browser_specific_settings": {
     "gecko": {
