@@ -94,6 +94,10 @@ ripliel/
     └── integration.test.js # Integration tests
 ```
 
+## Release
+
+See [RELEASE.md](RELEASE.md) for instructions on publishing to Chrome Web Store and Firefox Add-ons.
+
 ## How It Works
 
 1. When a page loads, the content script identifies text paragraphs
