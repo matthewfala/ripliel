@@ -132,7 +132,7 @@ describe('Popup HTML structure', () => {
 
   test('has font selection dropdown', () => {
     expect(popupContent).toContain('id="serifFont"');
-    expect(popupContent).toContain('petit-medieval');
+    expect(popupContent).toContain('Libre Clarendon');
   });
 
   test('does not use X in UI text', () => {

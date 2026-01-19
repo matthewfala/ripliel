@@ -784,8 +784,8 @@
     let fontFamily;
     switch (config.serifFont) {
       case 'petit-medieval':
-        // Petit Medieval Clarendon 1159 with fallback
-        fontFamily = '"Petit Medieval Clarendon 1159", Georgia, "Times New Roman", Times, serif';
+        // Libre Clarendon (embedded, OFL licensed) with fallback
+        fontFamily = '"Libre Clarendon", Georgia, "Times New Roman", Times, serif';
         break;
       case 'georgia':
         fontFamily = 'Georgia, "Times New Roman", Times, serif';
@@ -803,7 +803,7 @@
         fontFamily = 'Baskerville, "Libre Baskerville", Georgia, serif';
         break;
       default:
-        fontFamily = '"Petit Medieval Clarendon 1159", Georgia, "Times New Roman", Times, serif';
+        fontFamily = '"Libre Clarendon", Georgia, "Times New Roman", Times, serif';
     }
 
     style.textContent = `

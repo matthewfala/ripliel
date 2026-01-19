@@ -3,9 +3,18 @@
  * Designed by Matthew Fala
  */
 
-/* Serif font override when enabled */
+/* Embedded Libre Clarendon font (OFL licensed) */
+@font-face {
+  font-family: 'Libre Clarendon';
+  src: url('../fonts/LibreClarendon-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Serif font override when enabled - default uses Libre Clarendon */
 .ripliel-serif {
-  font-family: Georgia, 'Times New Roman', Times, serif !important;
+  font-family: 'Libre Clarendon', Georgia, 'Times New Roman', Times, serif !important;
 }
 
 .ripliel-serif p,
@@ -14,7 +23,63 @@
 .ripliel-serif .content,
 .ripliel-serif .post,
 .ripliel-serif .entry-content {
+  font-family: 'Libre Clarendon', Georgia, 'Times New Roman', Times, serif !important;
+}
+
+/* Georgia font option */
+.ripliel-serif-georgia {
   font-family: Georgia, 'Times New Roman', Times, serif !important;
+}
+
+.ripliel-serif-georgia p,
+.ripliel-serif-georgia article,
+.ripliel-serif-georgia main,
+.ripliel-serif-georgia .content,
+.ripliel-serif-georgia .post,
+.ripliel-serif-georgia .entry-content {
+  font-family: Georgia, 'Times New Roman', Times, serif !important;
+}
+
+/* Times New Roman font option */
+.ripliel-serif-times {
+  font-family: 'Times New Roman', Times, serif !important;
+}
+
+.ripliel-serif-times p,
+.ripliel-serif-times article,
+.ripliel-serif-times main,
+.ripliel-serif-times .content,
+.ripliel-serif-times .post,
+.ripliel-serif-times .entry-content {
+  font-family: 'Times New Roman', Times, serif !important;
+}
+
+/* Palatino font option */
+.ripliel-serif-palatino {
+  font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', serif !important;
+}
+
+.ripliel-serif-palatino p,
+.ripliel-serif-palatino article,
+.ripliel-serif-palatino main,
+.ripliel-serif-palatino .content,
+.ripliel-serif-palatino .post,
+.ripliel-serif-palatino .entry-content {
+  font-family: Palatino, 'Palatino Linotype', 'Book Antiqua', serif !important;
+}
+
+/* Garamond font option */
+.ripliel-serif-garamond {
+  font-family: Garamond, 'EB Garamond', serif !important;
+}
+
+.ripliel-serif-garamond p,
+.ripliel-serif-garamond article,
+.ripliel-serif-garamond main,
+.ripliel-serif-garamond .content,
+.ripliel-serif-garamond .post,
+.ripliel-serif-garamond .entry-content {
+  font-family: Garamond, 'EB Garamond', serif !important;
 }
 
 /* Anchor container */

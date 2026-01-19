@@ -29,6 +29,12 @@
   "background": {
     "scripts": ["src/background.js"]
   },
+  "web_accessible_resources": [
+    {
+      "resources": ["fonts/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "browser_specific_settings": {
     "gecko": {
       "id": "ripliel@matthewfala.com",
